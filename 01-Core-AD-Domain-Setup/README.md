@@ -19,5 +19,5 @@ This document outlines the foundational setup of a complete Active Directory env
 ### Detailed Documentation
 For a step-by-step breakdown of the configuration for each machine, please see the detailed documentation below:
 
-* **[View Server Configuration Details](SERVER-Configuration.md)**
-* **[View Client Configuration Details](CLIENT-Configuration.md)**
+* **[View Server Configuration Details](configs/SERVER-Configuration.md)**
+* **[View Client Configuration Details](configs/CLIENT-Configuration.md)**
