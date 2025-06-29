@@ -4,53 +4,90 @@ This document outlines the detailed configuration steps for the `AD-LAB-SERVER` 
 
 ---
 
-### 1. VM Hardware Specifications
+### 1. VM Hardware & OS Specifications
 
-The virtual machine was provisioned in VMware Workstation with the following resources:
+- **Memory**: 4 GB RAM
+- **Processors**: 2 Cores
+- **Hard Disk**: 60 GB
+- **Network Adapter**: Connected to a private, isolated network (`VMnet2` - Host-only)
+- **Installation Media**: Windows Server 2022 Evaluation ISO
+- **Operating System**: Windows Server 2022 Datacenter (Desktop Experience)
 
-* **Memory:** 4 GB RAM
-* **Processors:** 2 CPU Cores
-* **Hard Disk:** 60 GB
-* **Network Adapter:** Connected to a private, isolated network (`VMnet2` - Host-only)
-* **Installation Media:** Windows Server 2022 Evaluation ISO
-
----
-
-### 2. Operating System Installation
-
-The OS was installed using a clean, custom installation method. The "Desktop Experience" version was chosen to ensure the full graphical user interface was available for administration.
-
-* **Edition:** Windows Server 2022 Datacenter Evaluation (Desktop Experience)
+*(For detailed hardware settings, see screenshots `SERVER-01` through `SERVER-05`)*
 
 ---
 
-### 3. Initial Server Configuration
+### 2. Initial System Configuration
 
-Before installing Active Directory, two critical pre-configurations were performed:
+Before installing Active Directory, the server was configured with a static identity on the network.
 
-1.  **Computer Name:** The server's randomly generated hostname was changed to `DC01` to follow a standard naming convention.
-2.  **Static IP Address:** The server was configured with a static IP address of `192.168.172.10` and its DNS was set to loopback (`127.0.0.1`) in preparation for its role as a DNS server.
+- **Hostname**: `DC01`
+- **Workgroup**: `WORKGROUP` (Default)
+- **Network Interface**: Ethernet0
+- **Static IPv4 Address**: `192.168.172.10`
+- **Subnet Mask**: `255.255.255.0`
+- **Default Gateway**: *(Not Configured)*
+- **Preferred DNS Server**: `127.0.0.1` (Loopback Address)
 
----
-
-### 4. Active Directory Installation & Promotion
-
-The server was configured as the first Domain Controller in a new forest.
-
-* **Role Installation:** The "Active Directory Domain Services" role was installed via Server Manager.
-
-* **Domain Promotion:** The server was promoted using the AD DS Configuration Wizard.
-    * A new forest was created with the root domain name **`patrick.local`**.
-    * The Domain Name System (DNS) server role was installed and configured alongside AD DS.
-    * A Directory Services Restore Mode (DSRM) password was set for disaster recovery purposes.
-    * All prerequisite checks passed successfully before the final installation.
+*Evidence: [SERVER-07-Initial-Properties.PNG](../screenshots/SERVER-07-Initial-Properties.PNG)*
 
 ---
 
-### 5. Active Directory Object Management
+### 3. Active Directory Domain Services (AD DS) Installation
 
-A logical structure was built within Active Directory to simulate a corporate environment.
+The core AD DS role was installed using the "Add Roles and Features" wizard in Server Manager.
 
-* **Organizational Units (OUs):** A top-level OU (`_Melbourne_Office`) was created, with departmental OUs (`_IT`, `_Sales`, `_Marketing`) nested inside.
+| Feature Installed | Status |
+|---|---|
+| Active Directory Domain Services | Succeeded |
+| Group Policy Management | Succeeded |
+| Remote Server Administration Tools | Succeeded |
+| AD DS and AD LDS Tools | Succeeded |
+| Active Directory Module for Windows PowerShell | Succeeded |
 
-* **Users & Groups:** A sample user account (`p.lunney`) was created in the `_IT` OU. A security group (`SG_IT_Admins`) was also created, and the user was added as a member to demonstrate permission management.
+*Evidence: [SERVER-08-ADDS-Role-Selection.PNG](../screenshots/SERVER-08-ADDS-Role-Selection.PNG), [SERVER-10-ADDS-Install-Success.PNG](../screenshots/SERVER-10-ADDS-Install-Success.PNG)*
+
+---
+
+### 4. Domain Controller Promotion
+
+The server was promoted to the first Domain Controller in a new forest.
+
+| Configuration | Setting |
+|---|---|
+| Deployment Operation | Add a new forest |
+| Root Domain Name | `patrick.local` |
+| Forest Functional Level | Windows Server 2016 |
+| Domain Functional Level | Windows Server 2016 |
+| DNS Server Role | Enabled |
+| Global Catalog (GC) | Enabled |
+| DSRM Password | Set for recovery purposes |
+| NetBIOS Domain Name | `PATRICK` |
+
+*Evidence: [SERVER-11-AD-Deployment-Config.PNG](../screenshots/SERVER-11-AD-Deployment-Config.PNG), [SERVER-12-AD-DC-Options.PNG](../screenshots/SERVER-12-AD-DC-Options.PNG)*
+
+---
+
+### 5. Active Directory Structure & Objects
+
+A logical structure was built in "Active Directory Users and Computers" to simulate a corporate environment.
+
+#### Organizational Units (OUs)
+- `_Melbourne_Office`
+  - `_IT`
+  - `_Sales`
+  - `_Marketing`
+
+*Evidence: [SERVER-16-OU-Structure-Created.PNG](../screenshots/SERVER-16-OU-Structure-Created.PNG)*
+
+#### User Accounts
+| Display Name | User Logon Name | Location (OU) |
+|---|---|---|
+| Patrick Lunney | `p.lunney@patrick.local` | `_IT` |
+
+#### Security Groups
+| Group Name | Group Scope / Type | Members |
+|---|---|---|
+| `SG_IT_Admins` | Global / Security | Patrick Lunney (`p.lunney`) |
+
+*Evidence: [SERVER-18-Group-Membership-Confirmation.PNG](../screenshots/SERVER-18-Group-Membership-Confirmation.PNG)*
